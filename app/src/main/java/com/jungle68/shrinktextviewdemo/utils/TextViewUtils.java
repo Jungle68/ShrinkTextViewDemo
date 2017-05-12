@@ -12,6 +12,27 @@ import android.widget.TextView;
 
 /**
  * @Describe
+ *
+ * ----------Dragon be here!----------/
+ * 　　　┏┓　　　┏┓
+ * 　　┏┛┻━━━┛┻┓
+ * 　　┃　　　　　　　┃
+ * 　　┃　　　━　　　┃
+ * 　　┃　┳┛　┗┳　┃
+ * 　　┃　　　　　　　┃
+ * 　　┃　　　┻　　　┃
+ * 　　┃　　　　　　　┃
+ * 　　┗━┓　　　┏━┛
+ * 　　　　┃　　　┃神兽保佑
+ * 　　　　┃　　　┃代码无BUG！
+ * 　　　　┃　　　┗━━━┓
+ * 　　　　┃　　　　　　　┣┓
+ * 　　　　┃　　　　　　　┏┛
+ * 　　　　┗┓┓┏━┳┓┏┛
+ * 　　　　　┃┫┫　┃┫┫
+ * 　　　　　┗┻┛　┗┻┛
+ *
+ * ━━━━━━神兽出没━━━━━━
  * @Author Jungle68
  * @Date 2015/5/12
  * @Contact master.jungle68@gmail.com
@@ -92,7 +113,7 @@ public class TextViewUtils {
             if (spread) {
                 BlurMaskFilter blurMaskFilter = new BlurMaskFilter(20, BlurMaskFilter.Blur.NORMAL);
                 ds.setMaskFilter(blurMaskFilter);
-            }else {
+            } else {
                 ds.setMaskFilter(null);
             }
         }
