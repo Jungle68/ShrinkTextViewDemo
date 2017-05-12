@@ -1,0 +1,5 @@
+<resources>
+    <string name="jungle68_app_name">ShrinkTextViewDemo</string>
+    <string name="jungle68_txet_tip">在 Android 开发中，有许多信息展示需要通过 TextView 来展现，如果只是普通的信息展现，使用 TextView setText(CharSequence str) 设置即可，
+        但是当在 TextView 里的这段内容需要截取某一部分字段，可以被点击以及响应响应的操作，这时候就需要用到 SpannableString 了，下面通过一段简单的代码实现部分文字被点击响应，及富文本表情的实现&#8230;收起</string>
+</resources>
