@@ -1,13 +1,13 @@
 package com.jungle68.shrinktextviewdemo.utils;
 
 import android.graphics.BlurMaskFilter;
-import android.graphics.Color;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 /**
@@ -32,6 +32,9 @@ public class TextViewUtilsTmp {
     private int mAlpha;
 
     private Integer mSpanTextColor;
+    private boolean mCanRead;
+
+    private int mMaxLineNums = 3;
 
     public static TextViewUtilsTmp newInstance(TextView textView, String oriMsg) {
         return new TextViewUtilsTmp(textView, oriMsg);
@@ -40,59 +43,86 @@ public class TextViewUtilsTmp {
     private TextViewUtilsTmp(TextView textView, String oriMsg) {
         mTextView = textView;
         mOriMsg = oriMsg;
-        textView.setMovementMethod(LinkMovementMethod.getInstance());//必须设置否则无效
     }
 
-    public TextViewUtilsTmp setSpanTextColor(int spanTextColor) {
+    public TextViewUtilsTmp spanTextColor(int spanTextColor) {
         mSpanTextColor = spanTextColor;
         return this;
     }
 
-    public TextViewUtilsTmp setOnSpanTextClickListener(OnSpanTextClickListener spanTextClickListener) {
+    public TextViewUtilsTmp onSpanTextClickListener(OnSpanTextClickListener spanTextClickListener) {
         mSpanTextClickListener = spanTextClickListener;
         return this;
     }
 
-    public TextViewUtilsTmp setPosition(int startPos, int endPos) {
+    public TextViewUtilsTmp position(int startPos, int endPos) {
         mStartPos = startPos;
         mEndPos = endPos;
         return this;
     }
 
-    public TextViewUtilsTmp setAlpha(int alpha) {
+    public TextViewUtilsTmp alpha(int alpha) {
         mAlpha = alpha;
+        return this;
+    }
+
+    public TextViewUtilsTmp maxLines(int maxlines) {
+        mMaxLineNums = maxlines;
         return this;
     }
 
     /**
      * 设置文字
-     * @param canRead  是否可见
+     *
+     * @param canRead 是否可见
      * @return
      */
     public TextViewUtilsTmp disPlayText(boolean canRead) {
-        if (mTextView == null)
-            return null;
-        if (canRead) {
-            mTextView.setText(mOriMsg);
-        } else {
-            mTextView.setText(getSpannableString(mOriMsg));
-        }
+        mCanRead = canRead;
         return this;
     }
 
+    public TextViewUtilsTmp build() {
+        if (mTextView == null) {
+            throw new IllegalArgumentException("textView not be null");
+        }
+        handleTextDisplay();
+        return this;
+    }
 
-    class SpanTextClickable extends ClickableSpan implements View.OnClickListener {
+    private void handleTextDisplay() {
+        mTextView.setText(mOriMsg);
+        if (!mCanRead) {
+            mTextView.setMovementMethod(LinkMovementMethod.getInstance());//必须设置否则无效
+            mTextView.setText(mOriMsg);
+            ViewTreeObserver viewTreeObserver = mTextView.getViewTreeObserver();
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    ViewTreeObserver viewTreeObserver = mTextView.getViewTreeObserver();
+                    viewTreeObserver.removeOnGlobalLayoutListener(this);
+                    if (mTextView.getLineCount() > mMaxLineNums) {
+                        int endOfLastLine = mTextView.getLayout().getLineEnd(mMaxLineNums - 1);
+                        String newVal = mTextView.getText().subSequence(0, endOfLastLine - 2) + "...";
+                        mTextView.setText(getSpannableString(newVal));
+                    }
+                }
+            });
+        }
+    }
+
+    class SpanTextClickable extends ClickableSpan {
         @Override
         public void onClick(View widget) {
-            if (mSpanTextClickListener != null)
+            if (mSpanTextClickListener != null) {
                 mSpanTextClickListener.setSpanText(mTextView, canNotRead);
+            }
+            handleTextDisplay();
         }
 
         @Override
         public void updateDrawState(TextPaint ds) {
-            if (mSpanTextColor == null) {
-                ds.setColor(Color.BLACK);
-            } else {
+            if (mSpanTextColor != null) {
                 ds.setColor(mSpanTextColor);
             }
             ds.setAlpha(mAlpha > 0 ? mAlpha : 0xff);
