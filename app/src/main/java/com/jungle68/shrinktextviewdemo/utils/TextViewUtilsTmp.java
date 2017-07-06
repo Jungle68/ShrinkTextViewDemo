@@ -91,10 +91,10 @@ public class TextViewUtilsTmp {
     }
 
     private void handleTextDisplay() {
+        mTextView.setVisibility(View.INVISIBLE);
         mTextView.setText(mOriMsg);
         if (!mCanRead) {
             mTextView.setMovementMethod(LinkMovementMethod.getInstance());//必须设置否则无效
-            mTextView.setText(mOriMsg);
             ViewTreeObserver viewTreeObserver = mTextView.getViewTreeObserver();
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -103,8 +103,9 @@ public class TextViewUtilsTmp {
                     viewTreeObserver.removeOnGlobalLayoutListener(this);
                     if (mTextView.getLineCount() > mMaxLineNums) {
                         int endOfLastLine = mTextView.getLayout().getLineEnd(mMaxLineNums - 1);
-                        String newVal = mTextView.getText().subSequence(0, endOfLastLine - 2) + "...";
-                        mTextView.setText(getSpannableString(newVal));
+                        String result = mOriMsg.subSequence(0, endOfLastLine - 2) + "...";
+                        mTextView.setText(getSpannableString(result));
+                        mTextView.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -117,7 +118,6 @@ public class TextViewUtilsTmp {
             if (mSpanTextClickListener != null) {
                 mSpanTextClickListener.setSpanText(mTextView, canNotRead);
             }
-            handleTextDisplay();
         }
 
         @Override
