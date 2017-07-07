@@ -92,7 +92,7 @@ public class TextViewUtilsTmp {
 
     private void handleTextDisplay() {
         mTextView.setVisibility(View.INVISIBLE);
-        mTextView.setText(mOriMsg);
+        mTextView.setText(getSpannableString(mOriMsg));
         if (!mCanRead) {
             mTextView.setMovementMethod(LinkMovementMethod.getInstance());//必须设置否则无效
             ViewTreeObserver viewTreeObserver = mTextView.getViewTreeObserver();
@@ -103,8 +103,12 @@ public class TextViewUtilsTmp {
                     viewTreeObserver.removeOnGlobalLayoutListener(this);
                     if (mTextView.getLineCount() > mMaxLineNums) {
                         int endOfLastLine = mTextView.getLayout().getLineEnd(mMaxLineNums - 1);
-                        String result = mOriMsg.subSequence(0, endOfLastLine - 2) + "...";
-                        mTextView.setText(getSpannableString(result));
+                        try {
+                            mOriMsg = mTextView.getText().subSequence(0, endOfLastLine - 2) + "...";
+                        }catch (Exception e){
+
+                        }
+                        mTextView.setText(getSpannableString(mOriMsg));
                         mTextView.setVisibility(View.VISIBLE);
                     }
                 }
@@ -138,7 +142,11 @@ public class TextViewUtilsTmp {
 
     private SpannableString getSpannableString(CharSequence temp) {
         SpannableString spanableInfo = new SpannableString(temp);
-        spanableInfo.setSpan(new SpanTextClickable(), mStartPos, mEndPos, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        try {
+            spanableInfo.setSpan(new SpanTextClickable(), mStartPos, mEndPos, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }catch (Exception e){
+            spanableInfo.setSpan(new SpanTextClickable(), 0, temp.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
         return spanableInfo;
     }
 
